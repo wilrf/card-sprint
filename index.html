@@ -43,17 +43,32 @@
   <section id="sprint" class="panel" hidden>
     <div id="sprintSetup" class="settings">
       <div class="group"><p class="lbl">Mode</p><div class="chips" id="sprintMode"></div></div>
+      <div class="group"><p class="lbl">Pace</p><div class="chips" id="sprintPace"></div><p class="hint" id="paceHint"></p></div>
       <div class="group"><p class="lbl">Length</p><div class="chips" id="sprintSeconds"></div></div>
       <p class="hint" id="sprintInfo"></p>
       <div class="row"><button class="primary" id="sprintStart" type="button">Start <kbd>Enter</kbd></button></div>
     </div>
     <div id="sprintPlay" hidden>
-      <div class="strip"><span>time <b id="sprintTime"></b></span><span>score <b id="sprintScore"></b></span></div>
+      <div class="strip"><span>time <b id="sprintTime"></b></span><span class="scorebox" id="scorebox">score <b id="sprintScore"></b></span></div>
       <div class="bar"><i id="sprintBar"></i></div>
-      <div class="face sprint-face" id="sprintFront"></div>
+      <div class="facewrap">
+        <div class="face sprint-face" id="sprintFront"></div>
+        <div class="mark" id="mark" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><path class="tick" d="M30 52 L44 66 L71 37"/><path class="x" d="M34 34 L66 66 M66 34 L34 66"/></svg></div>
+      </div>
+      <div class="sr" id="sr" aria-live="polite"></div>
       <div class="face back" id="sprintBack" hidden></div>
+      <div id="review" hidden>
+        <div class="where">Answer</div>
+        <div class="name" id="rvAnswer"></div>
+        <div class="cmp" id="rvCmp" hidden></div>
+        <div class="do" id="rvDo"></div>
+        <button class="primary" id="rvGo" type="button" hidden>Continue <kbd>Enter</kbd></button>
+      </div>
       <div class="choices" id="choices" hidden></div>
-      <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Your answer">
+      <div class="inrow" id="inrow">
+        <input id="answer" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Your answer, press Enter to check">
+        <button type="button" id="skip">Skip</button>
+      </div>
       <div class="row flip" id="flipKeys" hidden>
         <button type="button" id="flipShow">Show <kbd>Space</kbd></button>
         <button type="button" id="flipMiss" class="g1" hidden>Missed <kbd>F</kbd></button>

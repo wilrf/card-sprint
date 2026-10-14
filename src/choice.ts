@@ -8,7 +8,8 @@ export interface Options {
 }
 
 /** What shape an answer has: a term, a definition, or a cloze word. Wrong options should share it. */
-const answerType = (c: Card) => (c.kind === 'cloze' ? 'cloze' : c.kind === 'reversed' && c.ord === 1 ? 'term' : 'back');
+const answerType = (c: Card) =>
+  c.answer.includes('\\(') ? 'formula' : c.kind === 'cloze' ? 'cloze' : c.kind === 'reversed' && c.ord === 1 ? 'term' : 'back';
 
 /** The right answer plus up to three wrong ones that look like it, in random order. */
 export function pickOptions(card: Card, pool: Card[], count = 4, rand: () => number = Math.random): Options {

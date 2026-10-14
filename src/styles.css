@@ -78,6 +78,33 @@ code{font-family:var(--mono);font-size:12px}
 .strip .low b{color:var(--bad)}
 .bar{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:-8px}
 .bar i{display:block;height:100%;background:var(--accent);transform-origin:left;transition:transform .2s linear}
+/* feedback, as in flag/sprint: drawn check or cross over the card, +1 by the score */
+.facewrap{position:relative}
+.mark{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0}
+.mark svg{width:min(22%,90px);height:auto;filter:drop-shadow(0 2px 6px rgb(0 0 0 / .35))}
+.mark.ok{animation:mark .45s ease-out}.mark.no{animation:mark .55s ease-out}
+.mark circle{fill:var(--panel);stroke-width:5}
+.mark.ok circle{stroke:var(--good)}.mark.no circle{stroke:var(--bad)}
+.mark path{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:80;stroke-dashoffset:80}
+.mark.ok .tick{stroke:var(--good);animation:draw .22s .05s ease-out forwards}
+.mark.no .x{stroke:var(--bad);animation:draw .22s .05s ease-out forwards}
+.mark.ok .x,.mark.no .tick{display:none}
+@keyframes mark{0%{opacity:0;transform:scale(.6)}25%{opacity:1;transform:scale(1.08)}45%{transform:scale(1)}75%{opacity:1}100%{opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.scorebox{position:relative}
+.pop{position:absolute;right:-22px;top:0;font:600 13px var(--mono);color:var(--good);pointer-events:none;animation:pop .5s ease-out forwards}
+@keyframes pop{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-16px)}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#review{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;border:1px solid var(--bad);border-radius:6px;padding:16px}
+#review .where{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+#review .name{font:600 20px/1.4 var(--sans);text-wrap:balance;overflow-wrap:anywhere}
+#review .cmp{font-size:13.5px;color:var(--mute);border-top:1px solid var(--line);padding-top:10px;width:100%;overflow-wrap:anywhere}
+#review .cmp b{color:var(--bad);font-weight:600}
+#review .do{font-size:13px;color:var(--accent)}
+.inrow{display:flex;gap:8px}
+.inrow #answer{flex:1;min-width:0;width:auto}
+.last .miss{color:var(--bad);font-weight:600}
+.last .gotit{color:var(--good);font-weight:600}
 .sprint-face.ok{animation:ok .35s ease-out}
 .sprint-face.no{animation:no .35s ease-in-out}
 @keyframes ok{0%{box-shadow:0 0 0 3px var(--good)}100%{box-shadow:0 0 0 0 transparent}}
