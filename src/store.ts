@@ -1,7 +1,7 @@
 import type { Deck } from './cards';
 import type { CardState, Grade } from './srs';
 
-export type SprintMode = 'type' | 'flip';
+export type SprintMode = 'type' | 'choice' | 'flip';
 
 export interface LogEntry {
   card: string;

@@ -85,6 +85,12 @@ code{font-family:var(--mono);font-size:12px}
 #answer{font:500 20px var(--sans);width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);text-align:center}
 #answer:focus{outline:none;border-color:var(--accent)}
 .flip{justify-content:center}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choices button{display:flex;gap:10px;align-items:baseline;text-align:left;border-radius:8px;padding:10px 12px;line-height:1.35;overflow-wrap:anywhere}
+.choices button kbd{color:var(--mute);margin:0}
+.choices button:hover{border-color:var(--mute)}
+.choices .right{border-color:var(--good);box-shadow:0 0 0 1px var(--good)}
+.choices .wrong{border-color:var(--bad);box-shadow:0 0 0 1px var(--bad);opacity:.7}
 .last{min-height:1.5em;text-align:center;overflow-wrap:anywhere}
 #sprintPlay{display:flex;flex-direction:column;gap:16px}
 .result{display:flex;align-items:baseline;gap:12px}
@@ -111,6 +117,7 @@ code{font-family:var(--mono);font-size:12px}
 @media (max-width:480px){
   .face{font-size:18px;padding:22px 14px}
   .misses li{grid-template-columns:1fr}
+  .choices{grid-template-columns:1fr}
   nav button{padding:6px 9px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

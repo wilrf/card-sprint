@@ -23,6 +23,7 @@ export interface Card {
   /** position of the note in its deck; new cards are introduced in this order */
   pos: number;
   ord: number;
+  kind: NoteKind;
   front: string;
   back: string;
   /** what a typed answer is checked against */
@@ -50,7 +51,7 @@ function clozeSide(text: string, n: number, reveal: boolean): string {
 export function expandNote(deckId: string, note: Note, pos: number): Card[] {
   const sibling = `${deckId}/${note.group ?? note.id}`;
   const make = (ord: number, front: string, back: string, answer: string): Card => ({
-    id: `${deckId}/${note.id}/${ord}`, deckId, sibling, pos, ord, front, back, answer,
+    id: `${deckId}/${note.id}/${ord}`, deckId, sibling, pos, ord, kind: note.kind, front, back, answer,
   });
   const [a = '', b = ''] = note.fields;
   switch (note.kind) {
