@@ -38,6 +38,25 @@ function distance(a: string, b: string): number {
 
 const words = (s: string) => s.split(/ |\band\b|,/).filter(Boolean).sort().join(' ');
 
+const STOP = new Set(['a', 'an', 'the', 'and', 'or', 'of', 'to', 'in', 'on', 'by', 'for', 'with', 'as', 'at', 'is', 'are',
+  'be', 'it', 'its', 'from', 'into', 'that', 'this', 'their', 'than', 'vs', 'was', 'were', 'which', 'who', 'what']);
+/** "Bonds" and "bond" are the same key word; "gross" keeps its s. */
+const stem = (w: string) => (w.length > 3 && w.endsWith('s') && !w.endsWith('ss') ? w.slice(0, -1) : w);
+const keyWords = (s: string) => [...new Set(s.split(/[^a-z0-9]+/).filter((w) => w && !STOP.has(w)).map(stem))];
+/** Long answers need only this share of their key words */
+const KEYWORD_SHARE = 0.6;
+/** Answers with fewer key words than this must match as a whole */
+const KEYWORD_MIN = 4;
+
+function hasKeyWords(got: string, target: string): boolean {
+  const want = keyWords(target);
+  if (want.length < KEYWORD_MIN) return false;
+  const have = keyWords(got);
+  // a one-letter slip in a longer word still counts as the word
+  const hits = want.filter((w) => have.some((h) => h === w || (w.length >= 5 && distance(h, w) <= 1)));
+  return hits.length / want.length >= KEYWORD_SHARE;
+}
+
 export function check(input: string, answer: string): Verdict {
   const got = normalize(input);
   if (!got) return 'wrong';
@@ -49,6 +68,8 @@ export function check(input: string, answer: string): Verdict {
     if (distance(got, t) <= allowed) return 'close';
     // "interest and principal" for "principal and interest"
     if (words(got) === words(t)) return 'close';
+    // sentence answers: most of the key words, in any order, is enough
+    if (hasKeyWords(got, t)) return 'close';
   }
   return 'wrong';
 }

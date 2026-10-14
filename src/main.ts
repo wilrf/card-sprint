@@ -4,6 +4,7 @@ import { escapeHtml, expandDeck, plainText, renderText, type Card, type Deck } f
 import { schedule, waitLabel, type CardState, type Grade } from './srs';
 import { buildQueue } from './queue';
 import { check } from './match';
+import { pickOptions, type Options } from './choice';
 import { importFile } from './importers';
 import { load, parseData, save, type Data, type SprintMode } from './store';
 
@@ -140,9 +141,13 @@ interface Sprint {
   /** drills of past misses don't set best scores */
   drill: boolean;
   shown: boolean;
+  /** multiple-choice options for the current card */
+  choice?: Options;
+  /** set while a wrong choice shows the right one, so extra key presses don't count */
+  locked: boolean;
   timer: number;
 }
-const sprint: Sprint = { phase: 'setup', order: [], idx: 0, score: 0, misses: new Map(), endsAt: 0, drill: false, shown: false, timer: 0 };
+const sprint: Sprint = { phase: 'setup', order: [], idx: 0, score: 0, misses: new Map(), endsAt: 0, drill: false, shown: false, locked: false, timer: 0 };
 
 const sprintKey = () =>
   `${data.settings.sprintMode}|${data.settings.sprintSeconds}|${allDecks().filter((d) => !data.settings.off.includes(d.id)).map((d) => d.id).sort().join(',')}`;
@@ -167,7 +172,7 @@ function renderSprintSetup() {
   $('sprintSetup').hidden = false;
   $('sprintPlay').hidden = true;
   $('sprintResults').hidden = true;
-  chips($('sprintMode'), 'mode', [['type', 'Typing'], ['flip', 'Flip']] as [SprintMode, string][], data.settings.sprintMode, (v) => {
+  chips($('sprintMode'), 'mode', [['type', 'Typing'], ['choice', 'Multiple choice'], ['flip', 'Flip']] as [SprintMode, string][], data.settings.sprintMode, (v) => {
     data.settings.sprintMode = v; persist(); renderSprintSetup();
   });
   chips($('sprintSeconds'), 'secs', [[60, '1 min'], [120, '2 min'], [300, '5 min']], data.settings.sprintSeconds, (v) => {
@@ -184,16 +189,19 @@ function renderSprintSetup() {
 function startSprint(pool: Card[], drill: boolean) {
   if (!pool.length) return;
   Object.assign(sprint, { phase: 'play', order: shuffle(pool), idx: 0, score: 0, misses: new Map(), drill, endsAt: Date.now() + data.settings.sprintSeconds * 1000 });
-  const typing = data.settings.sprintMode === 'type';
+  const mode = data.settings.sprintMode;
   $('sprintSetup').hidden = true;
   $('sprintResults').hidden = true;
   $('sprintPlay').hidden = false;
-  $('answer').hidden = !typing;
-  $('flipKeys').hidden = typing;
+  $('answer').hidden = mode !== 'type';
+  $('choices').hidden = mode !== 'choice';
+  $('flipKeys').hidden = mode !== 'flip';
   $('sprintLast').textContent = '';
-  $('sprintKeys').innerHTML = typing
-    ? 'Exact answers count as you type · <kbd>Enter</kbd> check · <kbd>Tab</kbd> skip · <kbd>Esc</kbd> stop'
-    : '<kbd>Space</kbd> show · <kbd>J</kbd> got it · <kbd>F</kbd> missed · <kbd>Esc</kbd> stop';
+  $('sprintKeys').innerHTML = {
+    type: 'Exact answers count as you type · <kbd>Enter</kbd> check · <kbd>Tab</kbd> skip · <kbd>Esc</kbd> stop',
+    choice: '<kbd>1</kbd>–<kbd>4</kbd> choose · <kbd>Esc</kbd> stop',
+    flip: '<kbd>Space</kbd> show · <kbd>J</kbd> got it · <kbd>F</kbd> missed · <kbd>Esc</kbd> stop',
+  }[mode];
   showSprintCard();
   tick();
   sprint.timer = window.setInterval(tick, 200);
@@ -221,6 +229,28 @@ function showSprintCard() {
   const input = $<HTMLInputElement>('answer');
   input.value = '';
   if (data.settings.sprintMode === 'type') input.focus();
+  if (data.settings.sprintMode === 'choice') {
+    // wrong options come from every active card, even in a drill of a few misses
+    sprint.choice = pickOptions(c, activeCards());
+    sprint.locked = false;
+    $('choices').innerHTML = sprint.choice.options.map((o, i) =>
+      `<button type="button" data-choice="${i}"><kbd>${i + 1}</kbd><span>${renderText(o)}</span></button>`).join('');
+  }
+}
+
+function choose(i: number) {
+  const opts = sprint.choice;
+  if (!opts || sprint.locked || i >= opts.options.length) return;
+  if (i === opts.right) return advance(true);
+  // show the right answer for a moment, then move on
+  sprint.locked = true;
+  const buttons = $('choices').querySelectorAll('button');
+  buttons[i].classList.add('wrong');
+  buttons[opts.right].classList.add('right');
+  flash('no');
+  window.setTimeout(() => {
+    if (sprint.phase === 'play') advance(false, `Answer: ${plainText(sprintCard().answer)}`);
+  }, 900);
 }
 
 function flash(cls: 'ok' | 'no') {
@@ -408,6 +438,10 @@ $('undo').addEventListener('click', undo);
 $('sprintStart').addEventListener('click', () => startSprint(activeCards(), false));
 $('answer').addEventListener('input', onTyped);
 $('flipShow').addEventListener('click', flipShow);
+$('choices').addEventListener('click', (e) => {
+  const b = (e.target as HTMLElement).closest<HTMLElement>('[data-choice]');
+  if (b) choose(Number(b.dataset.choice));
+});
 $('flipGot').addEventListener('click', () => advance(true));
 $('flipMiss').addEventListener('click', () => advance(false, `Missed: ${plainText(sprintCard().answer)}`));
 
@@ -482,7 +516,9 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     if (e.key === 'Escape') return endSprint();
-    if (data.settings.sprintMode === 'type') {
+    if (data.settings.sprintMode === 'choice') {
+      if (/^[1-9]$/.test(e.key)) choose(Number(e.key) - 1);
+    } else if (data.settings.sprintMode === 'type') {
       if (e.key === 'Enter') { e.preventDefault(); onEnter(); }
       else if (e.key === 'Tab') { e.preventDefault(); skip(); }
     } else if (e.key === ' ') { e.preventDefault(); flipShow(); }

@@ -5,6 +5,7 @@ import { expandDeck, expandNote, plainText, renderText, type Deck } from './card
 import { dayStart, schedule, waitLabel, type CardState } from './srs';
 import { buildQueue } from './queue';
 import { check, normalize } from './match';
+import { pickOptions } from './choice';
 import { htmlToText, parseAnki, parseDelimited, parseJson } from './importers';
 import { parseData, fresh } from './store';
 import fir from './fir-deck.json';
@@ -120,6 +121,36 @@ describe('typed answers', () => {
     expect(check('interest and principal', 'Principal and interest')).toBe('close');
     expect(check('debit', 'Debt')).toBe('wrong');
     expect(check('', 'Debt')).toBe('wrong');
+  });
+
+  it('accepts most of the key words of a sentence answer, in any order', () => {
+    const answer = 'Where businesses and governments raise long-term money by selling stocks or bonds';
+    expect(check('businesses raise long term money selling stock and bonds', answer)).toBe('close');
+    expect(check('governments sell bond', answer)).toBe('wrong');
+    // short answers still need the whole thing
+    expect(check('present value', 'Net present value')).toBe('wrong');
+  });
+});
+
+describe('multiple choice', () => {
+  const firCards = expandDeck(fir as Deck);
+  const term = firCards.find((c) => c.front.startsWith('Where businesses and governments'))!;
+
+  it('offers the right answer once among four distinct options', () => {
+    const { options, right } = pickOptions(term, firCards);
+    expect(options).toHaveLength(4);
+    expect(options[right]).toBe('Capital markets');
+    expect(new Set(options.map(normalize)).size).toBe(4);
+  });
+
+  it('draws wrong options of the same kind and never the card\'s own reverse', () => {
+    for (let i = 0; i < 20; i++) {
+      const { options, right } = pickOptions(term, firCards);
+      const wrong = options.filter((_, j) => j !== right);
+      // the other term cards answer with short names, not definitions
+      expect(wrong.every((o) => firCards.some((c) => c.kind === 'reversed' && c.ord === 1 && c.answer === o))).toBe(true);
+      expect(wrong).not.toContain(term.front);
+    }
   });
 });
 
