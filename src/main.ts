@@ -6,7 +6,7 @@ import { buildQueue } from './queue';
 import { check } from './match';
 import { pickOptions, type Options } from './choice';
 import { importFile } from './importers';
-import { load, parseData, save, type Data, type SprintMode } from './store';
+import { load, parseData, save, type Data, type SprintMode, type SprintPace } from './store';
 
 const BUILTIN = firDeck as Deck;
 let data: Data = load();
@@ -140,17 +140,27 @@ interface Sprint {
   endsAt: number;
   /** drills of past misses don't set best scores */
   drill: boolean;
+  /** Learn pace: a miss pauses the clock and shows the answer */
+  learn: boolean;
+  /** flip mode: the answer is showing */
   shown: boolean;
   /** multiple-choice options for the current card */
   choice?: Options;
-  /** set while a wrong choice shows the right one, so extra key presses don't count */
+  /** a result is on screen for a beat; answers wait */
   locked: boolean;
+  /** Learn pace: the review panel is up and the clock is paused */
+  reviewing: boolean;
+  pausedAt: number;
   timer: number;
 }
-const sprint: Sprint = { phase: 'setup', order: [], idx: 0, score: 0, misses: new Map(), endsAt: 0, drill: false, shown: false, locked: false, timer: 0 };
+const sprint: Sprint = {
+  phase: 'setup', order: [], idx: 0, score: 0, misses: new Map(), endsAt: 0,
+  drill: false, learn: true, shown: false, locked: false, reviewing: false, pausedAt: 0, timer: 0,
+};
 
+/** Learn pauses the clock, so its scores are kept apart from Sprint pace */
 const sprintKey = () =>
-  `${data.settings.sprintMode}|${data.settings.sprintSeconds}|${allDecks().filter((d) => !data.settings.off.includes(d.id)).map((d) => d.id).sort().join(',')}`;
+  `${data.settings.sprintMode}|${data.settings.sprintPace}|${data.settings.sprintSeconds}|${allDecks().filter((d) => !data.settings.off.includes(d.id)).map((d) => d.id).sort().join(',')}`;
 
 function shuffle<T>(xs: T[]): T[] {
   const a = [...xs];
@@ -167,17 +177,24 @@ function chips<T extends string | number>(el: HTMLElement, name: string, opts: [
   el.querySelectorAll('input').forEach((input, i) => input.addEventListener('change', () => onPick(opts[i][0])));
 }
 
+const PACE_HINT: Record<SprintPace, string> = {
+  learn: 'A miss pauses the clock and shows the answer. The card comes back soon.',
+  sprint: 'The clock never stops. A miss shows the answer under the next card.',
+};
+
 function renderSprintSetup() {
   if (sprint.phase !== 'setup') return;
   $('sprintSetup').hidden = false;
   $('sprintPlay').hidden = true;
   $('sprintResults').hidden = true;
-  chips($('sprintMode'), 'mode', [['type', 'Typing'], ['choice', 'Multiple choice'], ['flip', 'Flip']] as [SprintMode, string][], data.settings.sprintMode, (v) => {
-    data.settings.sprintMode = v; persist(); renderSprintSetup();
-  });
-  chips($('sprintSeconds'), 'secs', [[60, '1 min'], [120, '2 min'], [300, '5 min']], data.settings.sprintSeconds, (v) => {
-    data.settings.sprintSeconds = v; persist(); renderSprintSetup();
-  });
+  const redraw = () => { persist(); renderSprintSetup(); };
+  chips($('sprintMode'), 'mode', [['type', 'Typing'], ['choice', 'Multiple choice'], ['flip', 'Flip']] as [SprintMode, string][],
+    data.settings.sprintMode, (v) => { data.settings.sprintMode = v; redraw(); });
+  chips($('sprintPace'), 'pace', [['learn', 'Learn'], ['sprint', 'Sprint']] as [SprintPace, string][],
+    data.settings.sprintPace, (v) => { data.settings.sprintPace = v; redraw(); });
+  $('paceHint').textContent = PACE_HINT[data.settings.sprintPace];
+  chips($('sprintSeconds'), 'secs', [[60, '1 min'], [120, '2 min'], [300, '5 min']], data.settings.sprintSeconds,
+    (v) => { data.settings.sprintSeconds = v; redraw(); });
   const pool = activeCards().length;
   const best = data.best[sprintKey()];
   $('sprintInfo').textContent = pool
@@ -188,40 +205,55 @@ function renderSprintSetup() {
 
 function startSprint(pool: Card[], drill: boolean) {
   if (!pool.length) return;
-  Object.assign(sprint, { phase: 'play', order: shuffle(pool), idx: 0, score: 0, misses: new Map(), drill, endsAt: Date.now() + data.settings.sprintSeconds * 1000 });
-  const mode = data.settings.sprintMode;
+  Object.assign(sprint, {
+    phase: 'play', order: shuffle(pool), idx: 0, score: 0, misses: new Map(), drill,
+    learn: data.settings.sprintPace === 'learn', locked: false, reviewing: false,
+    endsAt: Date.now() + data.settings.sprintSeconds * 1000,
+  });
   $('sprintSetup').hidden = true;
   $('sprintResults').hidden = true;
   $('sprintPlay').hidden = false;
-  $('answer').hidden = mode !== 'type';
-  $('choices').hidden = mode !== 'choice';
-  $('flipKeys').hidden = mode !== 'flip';
+  $('review').hidden = true;
   $('sprintLast').textContent = '';
+  $('sprintScore').textContent = '0';
   $('sprintKeys').innerHTML = {
     type: 'Exact answers count as you type · <kbd>Enter</kbd> check · <kbd>Tab</kbd> skip · <kbd>Esc</kbd> stop',
     choice: '<kbd>1</kbd>–<kbd>4</kbd> choose · <kbd>Esc</kbd> stop',
     flip: '<kbd>Space</kbd> show · <kbd>J</kbd> got it · <kbd>F</kbd> missed · <kbd>Esc</kbd> stop',
-  }[mode];
+  }[data.settings.sprintMode];
+  showControls();
   showSprintCard();
   tick();
   sprint.timer = window.setInterval(tick, 200);
 }
 
+/** The answer controls for this mode; the review panel replaces them while it is up. */
+function showControls() {
+  const mode = data.settings.sprintMode;
+  const reviewing = sprint.reviewing;
+  // typing keeps its field during review: you type the answer once to continue
+  $('inrow').hidden = mode !== 'type';
+  $('skip').hidden = reviewing;
+  $('choices').hidden = mode !== 'choice' || reviewing;
+  $('flipKeys').hidden = mode !== 'flip' || reviewing;
+}
+
 function tick() {
+  if (sprint.reviewing) return; // the clock is paused
   const left = Math.max(0, sprint.endsAt - Date.now());
   const total = data.settings.sprintSeconds * 1000;
   $('sprintTime').textContent = String(Math.ceil(left / 1000));
   $('sprintTime').parentElement!.classList.toggle('low', left < 10_000);
-  $('sprintScore').textContent = String(sprint.score);
   $('sprintBar').style.transform = `scaleX(${left / total})`;
   if (!left) endSprint();
 }
 
-const sprintCard = () => sprint.order[sprint.idx % sprint.order.length];
+const sprintCard = () => sprint.order[sprint.idx];
 
 function showSprintCard() {
   const c = sprintCard();
   sprint.shown = false;
+  sprint.locked = false;
   $('sprintFront').innerHTML = renderText(c.front);
   $('sprintBack').hidden = true;
   $('flipShow').hidden = false;
@@ -232,66 +264,131 @@ function showSprintCard() {
   if (data.settings.sprintMode === 'choice') {
     // wrong options come from every active card, even in a drill of a few misses
     sprint.choice = pickOptions(c, activeCards());
-    sprint.locked = false;
     $('choices').innerHTML = sprint.choice.options.map((o, i) =>
       `<button type="button" data-choice="${i}"><kbd>${i + 1}</kbd><span>${renderText(o)}</span></button>`).join('');
   }
 }
 
+function next() {
+  sprint.idx++;
+  if (sprint.idx >= sprint.order.length) { sprint.order = shuffle(sprint.order); sprint.idx = 0; }
+  showSprintCard();
+}
+
+/** The line under the card: what the last answer was. */
+function lastLine(kind: 'gotit' | 'miss', lead: string, text: string) {
+  $('sprintLast').innerHTML = `${lead} <span class="${kind}"></span>`;
+  $('sprintLast').querySelector('span')!.textContent = text;
+}
+
+// right/wrong feedback: a pulse or shake on the card, a drawn check or cross, and +1 by the score
+function fx(ok: boolean) {
+  try { navigator.vibrate?.(ok ? 18 : [35, 45, 35]); } catch { /* blocked or unsupported */ }
+  for (const el of [$('sprintFront'), $('mark')]) {
+    el.classList.remove('ok', 'no');
+    void el.offsetWidth; // restart the animation
+    el.classList.add(ok ? 'ok' : 'no');
+  }
+  $('sr').textContent = ok ? 'Correct' : 'Wrong';
+  if (ok) {
+    const p = document.createElement('span');
+    p.className = 'pop';
+    p.textContent = '+1';
+    $('scorebox').append(p);
+    window.setTimeout(() => p.remove(), 550);
+  }
+}
+
+/** A right answer. Learn holds the card with its answer for a beat; Sprint moves on at once. */
+function right(exact = true) {
+  const c = sprintCard();
+  sprint.score++;
+  $('sprintScore').textContent = String(sprint.score);
+  fx(true);
+  lastLine('gotit', exact ? '' : 'Accepted. Exact answer:', `✓ ${plainText(c.answer)}`);
+  if (!sprint.learn) return next();
+  sprint.locked = true;
+  window.setTimeout(() => sprint.phase === 'play' && next(), 550);
+}
+
+/**
+ * A miss. Learn pauses the clock and shows the answer until you continue, then brings the card
+ * back a few cards later. Sprint notes the answer under the next card and keeps going.
+ * `given` is what you picked or typed; undefined means a skip.
+ */
+function miss(given?: string, verb = 'You picked') {
+  const c = sprintCard();
+  sprint.misses.set(c.id, c);
+  fx(false);
+  if (!sprint.learn) {
+    lastLine('miss', given === undefined ? 'Skipped:' : 'That was', plainText(c.answer));
+    return next();
+  }
+  sprint.reviewing = true;
+  sprint.pausedAt = Date.now();
+  $('rvAnswer').innerHTML = renderText(c.back);
+  $('rvCmp').hidden = given === undefined;
+  if (given !== undefined) {
+    // renderText escapes what you typed and draws a picked formula as math
+    $('rvCmp').innerHTML = `${verb} <b>${renderText(given)}</b>`;
+  }
+  $('review').hidden = false;
+  showControls();
+  const typing = data.settings.sprintMode === 'type';
+  $('rvDo').textContent = typing ? 'Type the answer to continue' : '';
+  $('rvGo').hidden = typing;
+  if (typing) {
+    const input = $<HTMLInputElement>('answer');
+    input.value = '';
+    input.focus();
+  } else $('rvGo').focus();
+  if (sprint.order.length > 1) sprint.order.splice(sprint.idx + 3 + Math.floor(Math.random() * 2), 0, c);
+}
+
+function endReview() {
+  if (!sprint.reviewing) return;
+  sprint.endsAt += Date.now() - sprint.pausedAt;
+  sprint.reviewing = false;
+  $('review').hidden = true;
+  $('sprintLast').textContent = '';
+  showControls();
+  next();
+}
+
 function choose(i: number) {
   const opts = sprint.choice;
-  if (!opts || sprint.locked || i >= opts.options.length) return;
-  if (i === opts.right) return advance(true);
-  // show the right answer for a moment, then move on
+  if (!opts || sprint.locked || sprint.reviewing || i >= opts.options.length) return;
+  if (i === opts.right) return right();
+  if (sprint.learn) return miss(opts.options[i]);
+  // Sprint pace: mark the pick and the right answer for a beat, then move on
   sprint.locked = true;
   const buttons = $('choices').querySelectorAll('button');
   buttons[i].classList.add('wrong');
   buttons[opts.right].classList.add('right');
-  flash('no');
-  window.setTimeout(() => {
-    if (sprint.phase === 'play') advance(false, `Answer: ${plainText(sprintCard().answer)}`);
-  }, 900);
-}
-
-function flash(cls: 'ok' | 'no') {
-  const f = $('sprintFront');
-  f.classList.remove('ok', 'no');
-  void f.offsetWidth; // restart the animation
-  f.classList.add(cls);
-}
-
-function advance(correct: boolean, note = '') {
-  const c = sprintCard();
-  if (correct) sprint.score++;
-  else sprint.misses.set(c.id, c);
-  flash(correct ? 'ok' : 'no');
-  $('sprintLast').textContent = note;
-  sprint.idx++;
-  if (sprint.idx % sprint.order.length === 0) sprint.order = shuffle(sprint.order);
-  $('sprintScore').textContent = String(sprint.score);
-  showSprintCard();
+  sprint.misses.set(sprintCard().id, sprintCard());
+  fx(false);
+  lastLine('miss', 'That was', plainText(sprintCard().answer));
+  window.setTimeout(() => sprint.phase === 'play' && next(), 900);
 }
 
 function onTyped() {
+  if (sprint.locked) return;
   const input = $<HTMLInputElement>('answer');
-  if (check(input.value, plainText(sprintCard().answer)) === 'exact') advance(true);
+  const verdict = check(input.value, plainText(sprintCard().answer));
+  // in review, typing the answer (or most of its key words) is copying, not answering
+  if (sprint.reviewing) { if (verdict !== 'wrong') endReview(); return; }
+  if (verdict === 'exact') right();
 }
 
+/** Enter: a right answer scores, a wrong one is a miss, an empty field is a skip. */
 function onEnter() {
+  if (sprint.reviewing || sprint.locked) return;
   const input = $<HTMLInputElement>('answer');
-  if (!input.value.trim()) return;
-  const answer = plainText(sprintCard().answer);
-  const v = check(input.value, answer);
-  if (v === 'wrong') {
-    sprint.misses.set(sprintCard().id, sprintCard());
-    flash('no');
-    input.select();
-  } else advance(true, v === 'close' ? `Accepted. Exact answer: ${answer}` : '');
-}
-
-function skip() {
-  const c = sprintCard();
-  advance(false, `Skipped: ${plainText(c.front).slice(0, 60)} → ${plainText(c.answer)}`);
+  const typed = input.value.trim();
+  if (!typed) return miss();
+  const verdict = check(typed, plainText(sprintCard().answer));
+  if (verdict === 'wrong') miss(typed, 'You typed');
+  else right(verdict === 'exact');
 }
 
 function flipShow() {
@@ -301,6 +398,16 @@ function flipShow() {
   $('sprintBack').hidden = false;
   $('flipShow').hidden = true;
   $('flipGot').hidden = $('flipMiss').hidden = false;
+}
+
+/** Flip shows the answer already, so a miss skips the review panel but still brings the card back in Learn. */
+function flipMissed() {
+  const c = sprintCard();
+  sprint.misses.set(c.id, c);
+  fx(false);
+  lastLine('miss', 'Missed:', plainText(c.answer));
+  if (sprint.learn && sprint.order.length > 1) sprint.order.splice(sprint.idx + 3 + Math.floor(Math.random() * 2), 0, c);
+  next();
 }
 
 function endSprint() {
@@ -442,8 +549,10 @@ $('choices').addEventListener('click', (e) => {
   const b = (e.target as HTMLElement).closest<HTMLElement>('[data-choice]');
   if (b) choose(Number(b.dataset.choice));
 });
-$('flipGot').addEventListener('click', () => advance(true));
-$('flipMiss').addEventListener('click', () => advance(false, `Missed: ${plainText(sprintCard().answer)}`));
+$('flipGot').addEventListener('click', () => right());
+$('flipMiss').addEventListener('click', flipMissed);
+$('rvGo').addEventListener('click', endReview);
+$('skip').addEventListener('click', () => { miss(); });
 
 $('deckList').addEventListener('change', (e) => {
   const id = (e.target as HTMLInputElement).dataset.deck;
@@ -516,14 +625,20 @@ document.addEventListener('keydown', (e) => {
       return;
     }
     if (e.key === 'Escape') return endSprint();
+    if (sprint.reviewing) {
+      // typing continues by typing the answer; the other modes continue with Enter or Space
+      if (data.settings.sprintMode !== 'type' && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); endReview(); }
+      return;
+    }
     if (data.settings.sprintMode === 'choice') {
       if (/^[1-9]$/.test(e.key)) choose(Number(e.key) - 1);
     } else if (data.settings.sprintMode === 'type') {
       if (e.key === 'Enter') { e.preventDefault(); onEnter(); }
-      else if (e.key === 'Tab') { e.preventDefault(); skip(); }
-    } else if (e.key === ' ') { e.preventDefault(); flipShow(); }
-    else if (sprint.shown && (e.key === 'j' || e.key === 'J')) advance(true);
-    else if (sprint.shown && (e.key === 'f' || e.key === 'F')) advance(false, `Missed: ${plainText(sprintCard().answer)}`);
+      else if (e.key === 'Tab') { e.preventDefault(); if (!sprint.locked) miss(); }
+    } else if (sprint.locked) return;
+    else if (e.key === ' ') { e.preventDefault(); flipShow(); }
+    else if (sprint.shown && (e.key === 'j' || e.key === 'J')) right();
+    else if (sprint.shown && (e.key === 'f' || e.key === 'F')) flipMissed();
   }
 });
 

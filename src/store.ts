@@ -2,6 +2,7 @@ import type { Deck } from './cards';
 import type { CardState, Grade } from './srs';
 
 export type SprintMode = 'type' | 'choice' | 'flip';
+export type SprintPace = 'learn' | 'sprint';
 
 export interface LogEntry {
   card: string;
@@ -17,6 +18,7 @@ export interface Settings {
   /** deck ids switched off for Study and Sprint */
   off: string[];
   sprintMode: SprintMode;
+  sprintPace: SprintPace;
   sprintSeconds: number;
   theme?: 'light' | 'dark';
 }
@@ -37,7 +39,7 @@ const LOG_LIMIT = 5000;
 
 export const fresh = (): Data => ({
   v: 1, decks: [], states: {}, log: [], best: {},
-  settings: { newPerDay: 20, off: [], sprintMode: 'type', sprintSeconds: 120 },
+  settings: { newPerDay: 20, off: [], sprintMode: 'type', sprintPace: 'learn', sprintSeconds: 120 },
 });
 
 /** Accepts anything shaped like Data (a backup file or old storage); throws on anything else. */
