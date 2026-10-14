@@ -1,0 +1,848 @@
+{
+"id": "fir",
+"name": "FIR · Open Lectures 1–3",
+"notes": [
+{
+"id": "1791855131323",
+"kind": "reversed",
+"fields": [
+"Accounting equation",
+"Assets = Liabilities + Equity"
+]
+},
+{
+"id": "1791855131326",
+"kind": "cloze",
+"fields": [
+"Liabilities = money {{c1::borrowed}} by the company; Equity = money {{c2::invested}} into it"
+]
+},
+{
+"id": "1791855131329",
+"kind": "basic",
+"fields": [
+"Lenders have the right to which two payments?",
+"Principal and interest"
+]
+},
+{
+"id": "1791855131331",
+"kind": "basic",
+"fields": [
+"Shareholders expect, but aren't entitled to, what?",
+"Dividends and profit share"
+]
+},
+{
+"id": "1791855131333",
+"kind": "cloze",
+"fields": [
+"Debt is repaid {{c1::first}} with {{c2::no}} upside; equity is repaid {{c3::last}} with unlimited upside"
+]
+},
+{
+"id": "1791855131337",
+"kind": "basic",
+"fields": [
+"Duty of the CEO to maximize investor value",
+"Fiduciary duty"
+]
+},
+{
+"id": "1791855131339",
+"kind": "basic",
+"fields": [
+"Cash flow to investors =",
+"Revenue − operating expenses − reinvestments − taxes"
+]
+},
+{
+"id": "1791855131341",
+"kind": "basic",
+"fields": [
+"Six corporate lifecycle stages, in order",
+"Start-Up, Young Growth, High Growth, Mature Growth, Mature Stable, Decline"
+]
+},
+{
+"id": "1791855131343",
+"kind": "basic",
+"fields": [
+"Start-Up financing mix (equity/debt)",
+"95 / 5"
+]
+},
+{
+"id": "1791855131345",
+"kind": "basic",
+"fields": [
+"Young Growth financing mix (equity/debt)",
+"80 / 20"
+]
+},
+{
+"id": "1791855131347",
+"kind": "basic",
+"fields": [
+"High Growth financing mix (equity/debt)",
+"60 / 40"
+]
+},
+{
+"id": "1791855131349",
+"kind": "basic",
+"fields": [
+"Mature Growth financing mix (equity/debt)",
+"40 / 60"
+]
+},
+{
+"id": "1791855131351",
+"kind": "basic",
+"fields": [
+"Mature Stable financing mix (equity/debt)",
+"35 / 65"
+]
+},
+{
+"id": "1791855131353",
+"kind": "basic",
+"fields": [
+"Decline financing mix (equity/debt)",
+"30 / 70"
+]
+},
+{
+"id": "1791855131355",
+"kind": "basic",
+"fields": [
+"Mature Stable capital structure is optimized for what?",
+"The debt tax shield"
+]
+},
+{
+"id": "1791855131357",
+"kind": "basic",
+"fields": [
+"How does a declining company return excess cash?",
+"Buybacks and dividends"
+]
+},
+{
+"id": "1791855131359",
+"kind": "reversed",
+"fields": [
+"Risk (definition)",
+"Uncertainty that an investment's actual return differs from what was expected"
+]
+},
+{
+"id": "1791855131362",
+"kind": "basic",
+"fields": [
+"The four types of risk",
+"Market, credit, liquidity, operational"
+]
+},
+{
+"id": "1791855131364",
+"kind": "reversed",
+"fields": [
+"Market risk",
+"The entire market or asset class moves against you"
+]
+},
+{
+"id": "1791855131367",
+"kind": "reversed",
+"fields": [
+"Credit risk",
+"A borrower fails to repay principal or interest as promised"
+]
+},
+{
+"id": "1791855131370",
+"kind": "reversed",
+"fields": [
+"Liquidity risk",
+"You can't sell an asset quickly without a large price discount"
+]
+},
+{
+"id": "1791855131373",
+"kind": "reversed",
+"fields": [
+"Operational risk",
+"Loss from failed processes, systems, people or external events"
+]
+},
+{
+"id": "1791855131376",
+"kind": "basic",
+"fields": [
+"Which risk can't be diversified away?",
+"Market (systematic) risk"
+]
+},
+{
+"id": "1791855131378",
+"kind": "reversed",
+"fields": [
+"Real-world example of market risk",
+"2008 crisis: S&P 500 fell ~37% in one year"
+]
+},
+{
+"id": "1791855131381",
+"kind": "reversed",
+"fields": [
+"Real-world example of credit risk",
+"Lehman (2008): bondholders recovered ~9¢ on the dollar"
+]
+},
+{
+"id": "1791855131384",
+"kind": "reversed",
+"fields": [
+"Real-world example of liquidity risk",
+"LTCM (1998): couldn't unwind positions without moving markets"
+]
+},
+{
+"id": "1791855131387",
+"kind": "reversed",
+"fields": [
+"Real-world example of operational risk",
+"Knight Capital (2012): software bug lost $440M in 45 minutes"
+]
+},
+{
+"id": "1791855131390",
+"kind": "reversed",
+"fields": [
+"Financing provider for Start-Up / Young Growth",
+"Venture capital (very high risk, very high return)"
+]
+},
+{
+"id": "1791855131393",
+"kind": "reversed",
+"fields": [
+"Financing provider for High Growth",
+"Growth equity"
+]
+},
+{
+"id": "1791855131396",
+"kind": "reversed",
+"fields": [
+"Financing provider for Mature Growth",
+"Private equity"
+]
+},
+{
+"id": "1791855131399",
+"kind": "reversed",
+"fields": [
+"Financing provider for Mature Stable",
+"Public debt markets (low return)"
+]
+},
+{
+"id": "1791855131402",
+"kind": "basic",
+"fields": [
+"How do commercial banks make money?",
+"The spread between lending and deposit rates"
+]
+},
+{
+"id": "1791855131404",
+"kind": "cloze",
+"fields": [
+"Bank pays 2% on $1,000 savings and charges 6% on a $1,000 loan → profit = {{c1::$40}}"
+]
+},
+{
+"id": "1791855131406",
+"kind": "reversed",
+"fields": [
+"Money supply",
+"Amount of money circulating in the economy"
+]
+},
+{
+"id": "1791855131409",
+"kind": "reversed",
+"fields": [
+"Velocity of money",
+"Speed at which money is used"
+]
+},
+{
+"id": "1791855131412",
+"kind": "basic",
+"fields": [
+"Money supply and velocity affect which three things?",
+"Interest rates, inflation, growth"
+]
+},
+{
+"id": "1791855131414",
+"kind": "basic",
+"fields": [
+"The Fed's three key functions",
+"Monetary policy; regulation & supervision; financial system stability"
+]
+},
+{
+"id": "1791855131416",
+"kind": "basic",
+"fields": [
+"The Fed's monetary policy goals (dual mandate)",
+"Stable prices and maximum employment"
+]
+},
+{
+"id": "1791855131418",
+"kind": "basic",
+"fields": [
+"\"Lender of last resort\" falls under which Fed function?",
+"Financial system stability"
+]
+},
+{
+"id": "1791855131420",
+"kind": "basic",
+"fields": [
+"The Fed's tools",
+"Reserve requirements, open market operations, fed funds rate, interest on reserves"
+]
+},
+{
+"id": "1791855131422",
+"kind": "reversed",
+"fields": [
+"Reserve requirement",
+"Minimum % of deposits banks must hold rather than lend"
+]
+},
+{
+"id": "1791855131425",
+"kind": "cloze",
+"fields": [
+"The reserve requirement has been {{c1::0%}} since {{c2::March 2020}}"
+]
+},
+{
+"id": "1791855131428",
+"kind": "reversed",
+"fields": [
+"Open market operations",
+"Fed buys or sells Treasuries to add or remove cash from the banking system"
+]
+},
+{
+"id": "1791855131431",
+"kind": "cloze",
+"fields": [
+"When the Fed buys securities it injects cash and pushes rates {{c1::down}}"
+]
+},
+{
+"id": "1791855131433",
+"kind": "reversed",
+"fields": [
+"Federal funds rate",
+"Rate banks charge each other for overnight loans of reserves; the Fed sets a target range"
+]
+},
+{
+"id": "1791855131436",
+"kind": "basic",
+"fields": [
+"Rate the Fed charges banks directly",
+"Discount rate"
+]
+},
+{
+"id": "1791855131438",
+"kind": "cloze",
+"fields": [
+"In 1980 the Fed hiked rates to ~{{c1::20%}} to fight inflation"
+]
+},
+{
+"id": "1791855131440",
+"kind": "cloze",
+"fields": [
+"Interest on reserves was introduced in {{c1::2008}}; raising it {{c2::tightens}} policy"
+]
+},
+{
+"id": "1791855131443",
+"kind": "cloze",
+"fields": [
+"Commercial banks earn the {{c1::interest spread}}; investment banks earn {{c2::fees}}"
+]
+},
+{
+"id": "1791855131446",
+"kind": "basic",
+"fields": [
+"Commercial bank examples (slides)",
+"Chase, Bank of America, Wells Fargo"
+]
+},
+{
+"id": "1791855131448",
+"kind": "cloze",
+"fields": [
+"Investment banking is {{c1::sell}}-side; investment management is {{c2::buy}}-side"
+]
+},
+{
+"id": "1791855131451",
+"kind": "basic",
+"fields": [
+"Investment banking clients and revenue",
+"Corporations and governments; advisory and underwriting fees"
+]
+},
+{
+"id": "1791855131453",
+"kind": "basic",
+"fields": [
+"Investment management clients and revenue",
+"Wealthy individuals and institutions; management and performance fees"
+]
+},
+{
+"id": "1791855131455",
+"kind": "basic",
+"fields": [
+"Six IB product groups",
+"M&A, ECM, DCM, Sales & Trading, Restructuring, Wealth/Asset Management"
+]
+},
+{
+"id": "1791855131457",
+"kind": "basic",
+"fields": [
+"Four bank categories",
+"Bulge Bracket, Elite Boutique, Middle Market, Regional Boutique"
+]
+},
+{
+"id": "1791855131459",
+"kind": "reversed",
+"fields": [
+"Product group vs. coverage group",
+"Product groups specialize by deal type; coverage groups by industry"
+]
+},
+{
+"id": "1791855131462",
+"kind": "reversed",
+"fields": [
+"Capital markets",
+"Where businesses and governments raise long-term money by selling stocks or bonds"
+]
+},
+{
+"id": "1791855131465",
+"kind": "reversed",
+"fields": [
+"Debt Capital Markets (DCM)",
+"Raising funds by borrowing from investors; no ownership given up"
+]
+},
+{
+"id": "1791855131468",
+"kind": "reversed",
+"fields": [
+"Equity Capital Markets (ECM)",
+"Raising funds by selling ownership shares; no fixed repayment"
+]
+},
+{
+"id": "1791855131471",
+"kind": "cloze",
+"fields": [
+"Equity issuance {{c1::dilutes}} existing ownership"
+]
+},
+{
+"id": "1791855131473",
+"kind": "basic",
+"fields": [
+"Defaulting on a bond damages what?",
+"Your credit rating"
+]
+},
+{
+"id": "1791855131475",
+"kind": "cloze",
+"fields": [
+"Raising $1,000 at a $20,000 valuation means selling {{c1::5%}}"
+]
+},
+{
+"id": "1791855131477",
+"kind": "basic",
+"fields": [
+"Two services a sell-side mandate adds over buy-side",
+"Getting the highest return; protection against hostile takeovers"
+]
+},
+{
+"id": "1791855131479",
+"kind": "basic",
+"fields": [
+"Eight reasons for M&A",
+"Defensive position, geographic expansion, distribution/customers, product diversification, economies of scale, tax, undervalued seller, acqui-hire"
+]
+},
+{
+"id": "1791855131481",
+"kind": "reversed",
+"fields": [
+"Tax inversion",
+"Acquiring a seller in a low-tax country and claiming headquarters there"
+]
+},
+{
+"id": "1791855131484",
+"kind": "reversed",
+"fields": [
+"Acqui-hire",
+"Acquisition made to get specific employees"
+]
+},
+{
+"id": "1791855131487",
+"kind": "cloze",
+"fields": [
+"Usual cost of deal financing: {{c1::Cash}} < {{c2::Debt}} < {{c3::Stock}}"
+]
+},
+{
+"id": "1791855131491",
+"kind": "basic",
+"fields": [
+"Which deal financing lets the seller defer taxes and share upside?",
+"Stock"
+]
+},
+{
+"id": "1791855131493",
+"kind": "basic",
+"fields": [
+"Main disadvantage of debt-financed deals",
+"Higher debt load for the combined company"
+]
+},
+{
+"id": "1791855131495",
+"kind": "basic",
+"fields": [
+"Two stock-deal risks for the seller",
+"Lock-up periods; fixed shares vs. fixed value"
+]
+},
+{
+"id": "1791855131497",
+"kind": "reversed",
+"fields": [
+"Statement answering \"Did we make money?\"",
+"Income statement"
+]
+},
+{
+"id": "1791855131500",
+"kind": "reversed",
+"fields": [
+"Statement answering \"What is our financial position?\"",
+"Balance sheet"
+]
+},
+{
+"id": "1791855131503",
+"kind": "reversed",
+"fields": [
+"Statement answering \"Did we generate cash?\"",
+"Cash flow statement"
+]
+},
+{
+"id": "1791855131506",
+"kind": "cloze",
+"fields": [
+"The balance sheet is a {{c1::point in time}}; the IS and CFS cover a {{c2::period of time}}"
+]
+},
+{
+"id": "1791855131509",
+"kind": "cloze",
+"fields": [
+"Revenue − COGS = {{c1::Gross Profit}}"
+]
+},
+{
+"id": "1791855131511",
+"kind": "cloze",
+"fields": [
+"Gross profit − SG&A − R&D = {{c1::EBIT (operating profit)}}"
+]
+},
+{
+"id": "1791855131513",
+"kind": "cloze",
+"fields": [
+"EBIT + interest income − interest expense = {{c1::EBT (pre-tax income)}}"
+]
+},
+{
+"id": "1791855131515",
+"kind": "reversed",
+"fields": [
+"Straight-line depreciation",
+"Asset value ÷ useful life"
+]
+},
+{
+"id": "1791855131518",
+"kind": "reversed",
+"fields": [
+"EBITDA",
+"Earnings Before Interest, Taxes, Depreciation & Amortization"
+]
+},
+{
+"id": "1791855131521",
+"kind": "cloze",
+"fields": [
+"EBITDA = EBIT + {{c1::D&A}}; it is a {{c2::non-GAAP}} metric"
+]
+},
+{
+"id": "1791855131524",
+"kind": "reversed",
+"fields": [
+"Net PP&E",
+"Gross PP&E − accumulated depreciation"
+]
+},
+{
+"id": "1791855131527",
+"kind": "reversed",
+"fields": [
+"Ending retained earnings",
+"Beginning RE + net income − dividends"
+]
+},
+{
+"id": "1791855131530",
+"kind": "reversed",
+"fields": [
+"Cash flow from operations",
+"Net income + D&A ± changes in working capital"
+]
+},
+{
+"id": "1791855131533",
+"kind": "basic",
+"fields": [
+"Two cash flow from investing items (slides)",
+"CapEx, acquisitions"
+]
+},
+{
+"id": "1791855131535",
+"kind": "basic",
+"fields": [
+"Two cash flow from financing items (slides)",
+"Debt issued, dividends paid"
+]
+},
+{
+"id": "1791855131537",
+"kind": "reversed",
+"fields": [
+"Working capital",
+"Current assets (excl. cash) − current liabilities (non-interest-bearing)"
+]
+},
+{
+"id": "1791855131540",
+"kind": "cloze",
+"fields": [
+"An increase in working capital {{c1::decreases}} cash"
+]
+},
+{
+"id": "1791855131542",
+"kind": "cloze",
+"fields": [
+"Depreciation is added back on the CFS because it's a {{c1::non-cash}} expense"
+]
+},
+{
+"id": "1791855131544",
+"kind": "basic",
+"fields": [
+"Net income flows to which two places?",
+"Top of the CFS; retained earnings on the BS"
+]
+},
+{
+"id": "1791855131546",
+"kind": "basic",
+"fields": [
+"Change in cash on the CFS flows to what?",
+"Cash on the ending balance sheet"
+]
+},
+{
+"id": "1791855131548",
+"kind": "cloze",
+"fields": [
+"Cash basis: revenue when {{c1::received}}, expenses when {{c2::paid}}"
+]
+},
+{
+"id": "1791855131551",
+"kind": "cloze",
+"fields": [
+"Accrual (GAAP): revenue when {{c1::earned}}, expenses when {{c2::incurred}}"
+]
+},
+{
+"id": "1791855131554",
+"kind": "basic",
+"fields": [
+"Key difference between cash and accrual accounting",
+"Timing"
+]
+},
+{
+"id": "1791855131556",
+"kind": "reversed",
+"fields": [
+"Revenue recognition principle",
+"Recognize revenue in the period it is earned"
+]
+},
+{
+"id": "1791855131559",
+"kind": "reversed",
+"fields": [
+"Matching principle",
+"Recognize expenses in the same period as the revenue they helped earn"
+]
+},
+{
+"id": "1791855131562",
+"kind": "basic",
+"fields": [
+"Two reasons a dollar today beats a dollar tomorrow",
+"Opportunity cost and inflation"
+]
+},
+{
+"id": "1791855131564",
+"kind": "reversed",
+"fields": [
+"Present value formula",
+"\\(PV = FV / (1+r)^n\\)"
+]
+},
+{
+"id": "1791855131567",
+"kind": "reversed",
+"fields": [
+"Future value formula",
+"\\(FV = PV(1+r)^n\\)"
+]
+},
+{
+"id": "1791855131570",
+"kind": "reversed",
+"fields": [
+"Intrinsic valuation",
+"DCF: value from the company's own projected cash flows"
+]
+},
+{
+"id": "1791855131573",
+"kind": "reversed",
+"fields": [
+"Extrinsic (relative) valuation",
+"Comparables: value from what similar companies are worth"
+]
+},
+{
+"id": "1791855131576",
+"kind": "reversed",
+"fields": [
+"Unlevered free cash flow",
+"EBIT(1 − t) + D&A − CapEx − ΔNWC"
+]
+},
+{
+"id": "1791855131579",
+"kind": "cloze",
+"fields": [
+"In UFCF, CapEx = {{c1::long}}-term investment; ΔNWC = {{c2::short}}-term investment"
+]
+},
+{
+"id": "1791855131582",
+"kind": "basic",
+"fields": [
+"UFCF is available to whom?",
+"All investors (debt and equity)"
+]
+},
+{
+"id": "1791855131584",
+"kind": "basic",
+"fields": [
+"\"Unlevered\" means calculated before what?",
+"Interest payments"
+]
+},
+{
+"id": "1791855131586",
+"kind": "reversed",
+"fields": [
+"Gordon Growth terminal value",
+"\\(TV = UFCF_5(1+g)/(r-g)\\)"
+]
+},
+{
+"id": "1791855131589",
+"kind": "basic",
+"fields": [
+"Discount rate normally used in a DCF",
+"WACC"
+]
+},
+{
+"id": "1791855131591",
+"kind": "reversed",
+"fields": [
+"Enterprise value",
+"Equity value + debt − cash"
+]
+},
+{
+"id": "1791855131594",
+"kind": "basic",
+"fields": [
+"Three common valuation multiples",
+"EV/EBITDA, EV/Revenue, P/E"
+]
+}
+]
+}

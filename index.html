@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>card/sprint</title>
+<meta name="description" content="Spaced-repetition flashcards with a timed sprint drill. Imports Anki decks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&display=swap" media="print" onload="this.media='all'">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><a class="logo" href="./" aria-label="card/sprint, home">card<span>/</span>sprint</a></h1>
+    <nav>
+      <button id="tab-study" data-tab="study" aria-current="page">Study</button>
+      <button id="tab-sprint" data-tab="sprint">Sprint</button>
+      <button id="tab-decks" data-tab="decks">Decks</button>
+    </nav>
+    <button class="mode" id="theme" type="button" aria-label="Switch colour theme"></button>
+  </header>
+
+  <section id="study" class="panel">
+    <div class="study-top">
+      <span class="counts" id="counts" aria-label="New, learning and due cards"></span>
+      <span class="sub" id="studyDeck"></span>
+    </div>
+    <div id="studyCard">
+      <div class="face" id="front" aria-live="polite"></div>
+      <div class="face back" id="back" hidden></div>
+      <button class="primary wide" id="show" type="button">Show answer <kbd>Space</kbd></button>
+      <div class="grades" id="grades" hidden>
+        <button type="button" data-grade="1" class="g1"><b>Again</b><span></span></button>
+        <button type="button" data-grade="2" class="g2"><b>Hard</b><span></span></button>
+        <button type="button" data-grade="3" class="g3"><b>Good</b><span></span></button>
+        <button type="button" data-grade="4" class="g4"><b>Easy</b><span></span></button>
+      </div>
+    </div>
+    <div class="done" id="studyDone" hidden></div>
+    <p class="hint keys"><kbd>Space</kbd> show · <kbd>1</kbd>–<kbd>4</kbd> grade · <kbd>Z</kbd> <button class="link" id="undo" type="button">undo</button></p>
+  </section>
+
+  <section id="sprint" class="panel" hidden>
+    <div id="sprintSetup" class="settings">
+      <div class="group"><p class="lbl">Mode</p><div class="chips" id="sprintMode"></div></div>
+      <div class="group"><p class="lbl">Length</p><div class="chips" id="sprintSeconds"></div></div>
+      <p class="hint" id="sprintInfo"></p>
+      <div class="row"><button class="primary" id="sprintStart" type="button">Start <kbd>Enter</kbd></button></div>
+    </div>
+    <div id="sprintPlay" hidden>
+      <div class="strip"><span>time <b id="sprintTime"></b></span><span>score <b id="sprintScore"></b></span></div>
+      <div class="bar"><i id="sprintBar"></i></div>
+      <div class="face sprint-face" id="sprintFront"></div>
+      <div class="face back" id="sprintBack" hidden></div>
+      <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="go" aria-label="Your answer">
+      <div class="row flip" id="flipKeys" hidden>
+        <button type="button" id="flipShow">Show <kbd>Space</kbd></button>
+        <button type="button" id="flipMiss" class="g1" hidden>Missed <kbd>F</kbd></button>
+        <button type="button" id="flipGot" class="g3" hidden>Got it <kbd>J</kbd></button>
+      </div>
+      <p class="hint last" id="sprintLast"></p>
+      <p class="hint keys" id="sprintKeys"></p>
+    </div>
+    <div id="sprintResults" hidden></div>
+  </section>
+
+  <section id="decks" class="panel settings" hidden>
+    <div class="group"><p class="lbl">Decks</p><ul class="decklist" id="deckList"></ul></div>
+    <div class="group">
+      <p class="lbl">Schedule</p>
+      <label class="field">New cards per day <input type="number" id="newPerDay" min="0" max="999" inputmode="numeric"></label>
+      <label class="field">Test date <span class="row"><input type="date" id="testDate"><button class="link" id="clearTest" type="button">clear</button></span></label>
+      <p class="hint">With a test date set, no card is scheduled past it.</p>
+    </div>
+    <div class="group">
+      <p class="lbl">Import</p>
+      <label class="filebtn"><input type="file" id="importFile" accept=".apkg,.colpkg,.csv,.tsv,.txt,.json" multiple>Choose files…</label>
+      <label class="check"><input type="checkbox" id="importReversed"> Also make reversed cards (CSV and text)</label>
+      <p class="hint">Anki <code>.apkg</code>/<code>.colpkg</code>, CSV or tab-separated text (front, back), or JSON.</p>
+      <p class="hint status" id="importStatus" role="status"></p>
+    </div>
+    <div class="group">
+      <p class="lbl">Progress</p>
+      <div class="row">
+        <button type="button" id="backup">Back up</button>
+        <label class="filebtn"><input type="file" id="restore" accept=".json">Restore…</label>
+        <button class="link danger" id="reset" type="button">Reset progress</button>
+      </div>
+      <p class="hint">Progress lives in this browser only. Back up to move it to another device.</p>
+    </div>
+  </section>
+  <div class="toast" id="toast" role="status" hidden></div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
